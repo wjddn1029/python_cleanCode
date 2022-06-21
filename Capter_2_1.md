@@ -72,3 +72,23 @@ https://zzsza.github.io/development/2020/07/05/python-magic-method/
 학부때 Cat class, Cat instance 만들던 것 처럼..<br/>
 아래 예제는 매직매서드를 사용하여 연속적이지 않은 객체의 특정 요소를 가져오는 방법
 ```python
+class items:
+  def __init__(self, *value): 
+    self._value = list(value)
+    print(*value)      # 12345 123 # 언패킹
+    print(self._value) # ['12345', '123']
+    
+  def __len__(self):
+    return len(self._value)
+    
+  def __getitem__(self, item):
+    return self._value.__getitem__(item)
+
+# a = items('12345', '123')
+li = ['12345', '123']
+a = items(*li)
+
+print(a)                 # <__main__.items object at 0x7f8279ab2750>
+print(a[0])              # 12345
+print(a.__getitem__(1))  # 123
+```
