@@ -92,3 +92,57 @@ print(a)                 # <__main__.items object at 0x7f8279ab2750>
 print(a[0])              # 12345
 print(a.__getitem__(1))  # 123
 ```
+
+## 2.4 컨택스트 관리자(Context manager)
+동작하다 예외처리시엔 Try -> <b>Catch</b>, 동작의 전후엔 Try -> <b>finally</b>
+<br/>
+프론트 개발자가 이해하기엔, .then()=>{}로 이해해도 무방한것같다.
+~~~python
+fd = open(filename)
+try:
+  process_file(fd)
+finally:
+  fd.close()
+~~~
+해당코드를 이렇게 수정할 수 있다. with 문에 함수를 추가하여 이후 동작을 진행할 수도 있다.
+~~~python  
+ with open(filename) as fd:
+    process_file(fd)
+~~~
+지금까지 Django api를 개발하면서 주로 DB와 커넥션을 맺을 때 get_connection_db(request)를 호출하여 사용했다.<br/>
+with는 매직매서드 __enter__를 사용<br/>
+__enter__의 리턴값을 as에 할당, as는 없어도 무방<br/>
+with as 스코프(블록)내의 모든 명령어를 실행한 후에는 __exit__가 실행된다.<br/>
+__exit__는 __enter__와 마찬가지로 with구문 안에 있다.<br/>
+with의 구문이나 스코프(블록)내의 명령어를 수행하다 오류가 발생하면 __exit__를 실행한다.
+~~~python
+'''
+ 백업시스템은 데이터베이스 서비스를 종료한 후에만 진행해야한다.
+ 백업시스템이 동작하면 성공, 실패와 관계없이 데이터베이스 서비스를 재실행해야한다.
+'''
+
+
+class DataBaseHandle:
+  def __enter__(self):
+    self.stopDB() # 실행1
+    return self #__enter__엔 리턴해주는게 좋은습관!
+  def __exit__(self, exc_type, ex_value, ex_traceback):
+    self.startDB() # 실행3
+
+  def stopDB(self):
+    print("stop Database")
+  def startDB(self):
+    print("start Database")
+    
+def backup():
+  print("backup processing") # 실행2
+  
+if __name__ == "__main__":
+  with DataBaseHandle():
+    backup()
+    
+    
+# stop Database
+# backup processing
+# start Database
+~~~
