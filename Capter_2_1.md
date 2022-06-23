@@ -146,3 +146,34 @@ if __name__ == "__main__":
 # backup processing
 # start Database
 ~~~
+## 2.5 컨택스트 관리자 구현
+항상 클래스로 매직매서드를 상속받아 구현해야 하는가? <b/>
+-> @contextlib.contextmanager 데코레이터를 사용하면 해결된다
+~~~python
+import contextlib
+
+# 매직매서드를 구현하지 않는다
+@contextlib.contextmanager
+def db_handler():
+  stopDB() # 1
+  yield ## 위에있으면 enter 아래에 있으면 exit
+  startDB()# 3
+ 
+ with db_handler():
+  backup() # 2
+~~~
+~~~python
+# 매직매서드를 구현하지만 with문이 없다, 믹스인클래스
+def db_handler(contextlib.ContextDecorator):  # 데코레이터 상속받음
+  def __enter__(self):
+    stopDB()
+   
+  def __exit(self):
+    startDB() # 3
+
+@db_handler   # 1
+def context_decorator():
+  backup().   # 2
+~~~
+필요한 기능만 추가하여 확장성 좋음, 캡슐화, 재사용성 좋음
+단점: 데코레이터로 함수를 호출하기 떄문에 __enter__, __exit__에서 리턴값을 필요로 할 경우 사용 불가
