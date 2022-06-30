@@ -28,3 +28,40 @@ connectig with 60
 >>> conn.__timeout  # 이름 맹글링
 attributeError: 'Connector' object has no attribute '__timeout'
 ~~~
+
+# 2.7 프로퍼티
+객체의 속성에 대한 접근을 제어하는 경우 사용한다.<br/>
+자바같은 객체지향언어는 접근제어로 게터(getter) 세터(setter)를 사용하는것처럼 파이썬에선 프로퍼티사용
+~~~ python
+# 이렇게 쓰면 외부에서 자유롭게 접근가능
+class Person:
+    def __init__(self, first_name, last_name, age):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.age = age 
+~~~
+~~~python
+# getter/setter 메서드를 통해서 객체의 내부 데이터에 대한 접근을 좀 더 통제할 수 있게되었지만,
+# 기존에 필드명을 바로 사용할 때 보다는 코드가 조금 지저분해졌습니다. 
+# 뿐만 아니라, Person 클래스의 프로그래밍 인터페이스가 변경됨에 따라 하위 호환성도 깨지게 된다는 큰 단점이 있음
+
+class Person:
+    def __init__(self, first_name, last_name, age):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.set_age(age)
+
+    def get_age(self):
+        return self._age
+
+    def set_age(self, age):
+        if age < 0:
+            raise ValueError("Invalid age")
+        self._age = age
+        
+person = Person("John", "Doe", 20)
+person.get_age()  # 20
+
+person.set_age(person.get_age() + 1)
+person.get_age()  # 21
+~~~
