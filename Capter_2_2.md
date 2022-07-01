@@ -65,3 +65,49 @@ person.get_age()  # 20
 person.set_age(person.get_age() + 1)
 person.get_age()  # 21
 ~~~
+
+~~~ python
+# 파이썬의 내장 함수인 property()로 필드명을 사용하는 것처럼 깔끔하게 getter/setter 메서드가 호출되게 할 수 있음
+
+class Person:
+    def __init__(self, first_name, last_name, age):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.age = age
+
+    def get_age(self):
+        return self._age
+
+    def set_age(self, age):
+        if age < 0:
+            raise ValueError("Invalid age")
+        self._age = age
+
+age = property(get_age, set_age)
+
+person = Person("John", "Doe", 20)
+person.age  # 20  # 내부적으로 get_age
+person.age = person.age + 1  # 내부적으로 set_age
+person.age  # 21
+~~~
+
+~~~python
+# @property 데코레이터 더 간단하게 
+class Person:
+    def __init__(self, first_name, last_name, age):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.age = age
+
+    @property
+    def age(self):
+        return self._age
+
+    @age.setter
+    def age(self, age):
+        if age < 0:
+            raise ValueError("Invalid age")
+        self._age = age
+~~~
+모든속성에 get,set(명령-분리원칙)을 활용하는 프로퍼티를 사용할 필요는 없다.<br/>
+속성값을 가져오거나 수정할 때 필요한 경우에만 사용하자
